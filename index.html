@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>国学与生活 · 匿名小调查</title>
+<style>
+:root{--bg:#f5f0eb;--card:#fff;--text:#2c2416;--muted:#8b7355;--accent:#5b4a3a;--input-bg:#faf7f3;--gold:#b8860b}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Noto Serif SC",serif;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh}
+.top{background:linear-gradient(135deg,#3d2e1f,var(--accent));color:#fff;text-align:center;padding:36px 20px 28px}
+.top h1{font-size:22px;font-weight:600;margin-bottom:6px}
+.top p{font-size:14px;opacity:.85}
+.top .time{font-size:12px;opacity:.6;margin-top:6px}
+.container{max-width:640px;margin:0 auto;padding:0 20px 60px}
+.q-block{background:var(--card);border-radius:10px;padding:20px;margin-bottom:14px;border:1px solid #e8e0d5;transition:border-color .2s}
+.q-block:hover{border-color:#d4c9b8}
+.q-num{display:inline-block;background:var(--accent);color:#fff;width:24px;height:24px;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:600;margin-right:8px;vertical-align:middle}
+.q-title{font-size:15px;font-weight:600;display:inline}
+.q-desc{font-size:13px;color:var(--muted);margin:6px 0 12px}
+.q-hint{font-size:12px;color:var(--muted);margin-bottom:10px;font-style:italic}
+textarea{width:100%;min-height:60px;border:1px solid #d4c9b8;border-radius:8px;padding:10px;font-size:14px;resize:vertical;background:var(--input-bg);font-family:inherit}
+textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(91,74,58,.1)}
+.radio-group{display:flex;flex-direction:column;gap:8px}
+.radio-group label{display:flex;align-items:flex-start;gap:8px;padding:10px 14px;border:1px solid #d4c9b8;border-radius:8px;cursor:pointer;font-size:14px;background:var(--input-bg);transition:all .2s}
+.radio-group label:hover{background:#e8e0d5}
+.radio-group label:has(input:checked){border-color:var(--accent);background:#f0ebe0;font-weight:600}
+.check-group{display:flex;flex-wrap:wrap;gap:8px}
+.check-group label{display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid #d4c9b8;border-radius:20px;cursor:pointer;font-size:13px;background:var(--input-bg);transition:all .2s}
+.check-group label:hover{background:#e8e0d5}
+.check-group label:has(input:checked){border-color:var(--accent);background:#f0ebe0}
+.voice-btn{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;background:#e8e0d5;border:none;border-radius:14px;cursor:pointer;font-size:12px;color:var(--accent);transition:all .2s}
+.voice-btn:hover{background:#d4c9b8}
+.voice-btn.recording{background:#c0392b;color:#fff;animation:pulse .8s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+.submit-section{text-align:center;margin-top:28px}
+.submit-btn{padding:14px 48px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;transition:all .2s}
+.submit-btn:hover{background:#3d2e1f}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed}
+.status{text-align:center;padding:14px;margin-top:14px;font-size:14px;border-radius:8px;display:none;white-space:pre-wrap;font-family:monospace;text-align:left;max-width:640px;margin-left:auto;margin-right:auto;word-break:break-all}
+.status.success{background:#e8f5e9;color:#2e7d32;display:block}
+.footer{text-align:center;padding:20px;color:var(--muted);font-size:12px}
+.footer a{color:var(--accent)}
+@media(max-width:480px){.top h1{font-size:18px}.container{padding:0 12px 60px}.q-block{padding:14px}}
+</style>
+</head>
+<body>
+<div class="top">
+  <h1>国学与生活 · 匿名小调查</h1>
+  <p>了解国学经典对日常生活的影响——你的真实体验很宝贵</p>
+  <p class="time">匿名 · 5分钟 · 没有标准答案</p>
+</div>
+
+<div class="container" id="surveyForm">
+
+<div class="q-block">
+  <span class="q-num">1</span><span class="q-title">你接触过儒释道/国学经典吗？</span>
+  <div class="radio-group">
+    <label><input type="radio" name="q1" value="深度接触" data-q="q1"><span>深度接触——读过原文、上过课、在生活中试过</span></label>
+    <label><input type="radio" name="q1" value="一般接触" data-q="q1"><span>一般接触——知道一些名言、偶尔看看相关内容</span></label>
+    <label><input type="radio" name="q1" value="浅浅接触" data-q="q1"><span>浅浅接触——刷到过视频/文章，没深究</span></label>
+    <label><input type="radio" name="q1" value="没接触过" data-q="q1"><span>没接触过</span></label>
+  </div>
+</div>
+
+<div class="q-block">
+  <span class="q-num">2</span><span class="q-title">如果选一个最打动你的经典，是哪个？</span>
+  <div class="radio-group">
+    <label><input type="radio" name="q2" value="道德经" data-q="q2"><span>道德经 / 老子</span></label>
+    <label><input type="radio" name="q2" value="论语" data-q="q2"><span>论语 / 儒家</span></label>
+    <label><input type="radio" name="q2" value="佛经" data-q="q2"><span>佛经 / 禅宗</span></label>
+    <label><input type="radio" name="q2" value="庄子" data-q="q2"><span>庄子</span></label>
+    <label><input type="radio" name="q2" value="阳明心学" data-q="q2"><span>阳明心学</span></label>
+    <label><input type="radio" name="q2" value="易经" data-q="q2"><span>易经</span></label>
+  </div>
+  <input type="text" id="q2_other" placeholder="其他..." style="display:none;width:100%;margin-top:8px;padding:8px;border:1px solid #d4c9b8;border-radius:6px;font-size:14px">
+  <label style="font-size:13px;margin-top:6px;display:block"><input type="checkbox" onchange="document.getElementById('q2_other').style.display=this.checked?'block':'none'"> 其他经典</label>
+</div>
+
+<div class="q-block">
+  <span class="q-num">3</span><span class="q-title">你曾在生活中尝试「用到」它吗？</span>
+  <p class="q-desc">比如：快发火时想起「上善若水」；做决定时想起「无为」</p>
+  <div class="radio-group">
+    <label><input type="radio" name="q3" value="经常" data-q="q3"><span>经常——几乎每天都会想起来</span></label>
+    <label><input type="radio" name="q3" value="有时候" data-q="q3"><span>有时候——关键时刻能想起来</span></label>
+    <label><input type="radio" name="q3" value="很少" data-q="q3"><span>很少——学的时候觉得对，合上书就忘了</span></label>
+    <label><input type="radio" name="q3" value="从不" data-q="q3"><span>从不——只当知识学，没想过用在生活里</span></label>
+  </div>
+</div>
+
+<div class="q-block">
+  <span class="q-num">4</span><span class="q-title">在关键时刻「忘了用它」——这种情况你经历过吗？</span>
+  <p class="q-desc">比如：明知道不该发火但还是发了；明知道该放下但还是纠结</p>
+  <div class="radio-group">
+    <label><input type="radio" name="q4" value="经常" data-q="q4"><span>经常——几乎每次都忘</span></label>
+    <label><input type="radio" name="q4" value="有时候" data-q="q4"><span>有时候——大事能想起来，小事忘了</span></label>
+    <label><input type="radio" name="q4" value="很少" data-q="q4"><span>很少——大多数时候能想起来</span></label>
+    <label><input type="radio" name="q4" value="从不" data-q="q4"><span>从不——我随时都能调用</span></label>
+  </div>
+</div>
+
+<div class="q-block">
+  <span class="q-num">5</span><span class="q-title">你试过哪些方法提醒自己？（多选）</span>
+  <div class="check-group">
+    <label><input type="checkbox" value="手机屏保" data-q="q5"><span>手机屏保/壁纸</span></label>
+    <label><input type="checkbox" value="抄经" data-q="q5"><span>抄经/写在本子上</span></label>
+    <label><input type="checkbox" value="贴便签" data-q="q5"><span>贴便签/放在桌上</span></label>
+    <label><input type="checkbox" value="戴手串" data-q="q5"><span>戴手串/佛珠/饰品</span></label>
+    <label><input type="checkbox" value="打坐冥想" data-q="q5"><span>打坐/冥想/站桩</span></label>
+    <label><input type="checkbox" value="听音频" data-q="q5"><span>听音频/播客</span></label>
+    <label><input type="checkbox" value="什么都不做" data-q="q5"><span>什么都不做，硬扛</span></label>
+  </div>
+  <input type="text" id="q5_other" placeholder="其他方法..." style="display:none;width:100%;margin-top:8px;padding:8px;border:1px solid #d4c9b8;border-radius:6px;font-size:14px">
+  <label style="font-size:13px;margin-top:6px;display:block"><input type="checkbox" onchange="document.getElementById('q5_other').style.display=this.checked?'block':'none'"> 其他</label>
+</div>
+
+<div class="q-block">
+  <span class="q-num">6</span><span class="q-title">这些方法为什么没持续？（多选）</span>
+  <div class="check-group">
+    <label><input type="checkbox" value="视觉麻木" data-q="q6"><span>视觉麻木了——看多了不注意</span></label>
+    <label><input type="checkbox" value="手在做心没跟" data-q="q6"><span>手在做心没跟上——变机械动作</span></label>
+    <label><input type="checkbox" value="不方便" data-q="q6"><span>不方便——在别人面前不好意思</span></label>
+    <label><input type="checkbox" value="忘了带" data-q="q6"><span>忘了带/丢了——不在身边</span></label>
+    <label><input type="checkbox" value="过几天不行" data-q="q6"><span>当时有效，过几天又不行了</span></label>
+    <label><input type="checkbox" value="没失效" data-q="q6"><span>没失效——我现在的方法挺好的</span></label>
+  </div>
+</div>
+
+<div class="q-block">
+  <span class="q-num">7</span><span class="q-title">你觉得自己真正需要的是什么？</span>
+  <div class="radio-group">
+    <label><input type="radio" name="q7" value="能被碰到的随身东西" data-q="q7"><span>一个「能被碰到」的随身东西——摸到它就回到那个状态</span></label>
+    <label><input type="radio" name="q7" value="每天自动提醒" data-q="q7"><span>一个「每天自动出现」的提醒——不用我主动记</span></label>
+    <label><input type="radio" name="q7" value="社群互相监督" data-q="q7"><span>一个「跟我一样的人」的社群——互相监督</span></label>
+    <label><input type="radio" name="q7" value="更简单的方法" data-q="q7"><span>一个「更简单的方法」——现在太复杂</span></label>
+    <label><input type="radio" name="q7" value="不需要" data-q="q7"><span>我不需要什么——知道了就够了</span></label>
+  </div>
+</div>
+
+<div class="q-block" style="border:2px solid var(--gold)">
+  <span class="q-num" style="background:var(--gold)">8</span><span class="q-title">如果有一件金器（黄金材质、哑光拙面、温润沉手），上面刻着曾经打动你的那句经典——低头摸到它就能回到那个通透的瞬间。你愿意试试吗？</span>
+  <div class="radio-group" style="margin-top:10px">
+    <label><input type="radio" name="q8" value="非常愿意" data-q="q8"><span>非常愿意——这正是我需要的</span></label>
+    <label><input type="radio" name="q8" value="有点兴趣" data-q="q8"><span>有点兴趣——愿意了解一下</span></label>
+    <label><input type="radio" name="q8" value="不确定" data-q="q8"><span>不确定——要看具体是什么</span></label>
+    <label><input type="radio" name="q8" value="不太需要" data-q="q8"><span>不太需要——提醒方式够用了</span></label>
+  </div>
+</div>
+
+<div class="q-block">
+  <span class="q-num">9</span><span class="q-title">你觉得这样一件东西值多少钱？</span>
+  <p class="q-desc">你愿意花多少——不是市场价，是你的心理价位</p>
+  <div class="radio-group">
+    <label><input type="radio" name="q9" value="300-800" data-q="q9"><span>¥300–800</span></label>
+    <label><input type="radio" name="q9" value="800-2000" data-q="q9"><span>¥800–2000</span></label>
+    <label><input type="radio" name="q9" value="2000-5000" data-q="q9"><span>¥2000–5000</span></label>
+    <label><input type="radio" name="q9" value="5000-15000" data-q="q9"><span>¥5000–15000</span></label>
+    <label><input type="radio" name="q9" value="15000+" data-q="q9"><span>¥15000+</span></label>
+  </div>
+</div>
+
+<div class="q-block">
+  <span class="q-num">10</span><span class="q-title">你的性别</span>
+  <div class="radio-group">
+    <label><input type="radio" name="q10" value="男" data-q="q10"><span>男</span></label>
+    <label><input type="radio" name="q10" value="女" data-q="q10"><span>女</span></label>
+  </div>
+</div>
+
+<div class="q-block">
+  <span class="q-num">11</span><span class="q-title">你的年龄</span>
+  <div class="radio-group">
+    <label><input type="radio" name="q11" value="18-24" data-q="q11"><span>18–24</span></label>
+    <label><input type="radio" name="q11" value="25-34" data-q="q11"><span>25–34</span></label>
+    <label><input type="radio" name="q11" value="35-44" data-q="q11"><span>35–44</span></label>
+    <label><input type="radio" name="q11" value="45-54" data-q="q11"><span>45–54</span></label>
+    <label><input type="radio" name="q11" value="55+" data-q="q11"><span>55+</span></label>
+  </div>
+</div>
+
+<div class="q-block">
+  <span class="q-num">12</span><span class="q-title">你目前生活在</span>
+  <div class="radio-group">
+    <label><input type="radio" name="q12" value="一线" data-q="q12"><span>一线城市（北上广深）</span></label>
+    <label><input type="radio" name="q12" value="新一线" data-q="q12"><span>新一线城市（杭州/成都/武汉等）</span></label>
+    <label><input type="radio" name="q12" value="二线" data-q="q12"><span>二线城市</span></label>
+    <label><input type="radio" name="q12" value="三线及以下" data-q="q12"><span>三线及以下</span></label>
+    <label><input type="radio" name="q12" value="海外" data-q="q12"><span>海外</span></label>
+  </div>
+</div>
+
+<div class="q-block">
+  <span class="q-num">13</span><span class="q-title">你的职业领域</span>
+  <div class="radio-group">
+    <label><input type="radio" name="q13" value="企业管理者" data-q="q13"><span>企业管理者/创业者</span></label>
+    <label><input type="radio" name="q13" value="自由职业" data-q="q13"><span>自由职业/个体</span></label>
+    <label><input type="radio" name="q13" value="公司职员" data-q="q13"><span>公司职员</span></label>
+    <label><input type="radio" name="q13" value="教育文化" data-q="q13"><span>教育/文化/艺术</span></label>
+    <label><input type="radio" name="q13" value="学生" data-q="q13"><span>学生</span></label>
+  </div>
+  <input type="text" id="q13_other" placeholder="其他职业..." style="display:none;width:100%;margin-top:8px;padding:8px;border:1px solid #d4c9b8;border-radius:6px;font-size:14px">
+  <label style="font-size:13px;margin-top:6px;display:block"><input type="checkbox" onchange="document.getElementById('q13_other').style.display=this.checked?'block':'none'"> 其他</label>
+</div>
+
+<div class="q-block" style="background:#fdfaf5">
+  <span class="q-num" style="background:var(--gold)">💬</span><span class="q-title">如果你愿意接受一次30分钟的深度访谈（聊聊真实体验），可以留下联系方式。我们会送一件小礼物作为感谢。</span>
+  <textarea placeholder="微信/手机（选填）..." data-q="contact" style="margin-top:10px;min-height:40px"></textarea>
+  <div style="margin-top:6px"><button class="voice-btn" onclick="startVoice(this,'contact')">🎤 语音输入</button></div>
+</div>
+
+<div class="submit-section">
+  <button class="submit-btn" onclick="submitSurvey()">📤 提交问卷</button>
+  <div class="status" id="status"></div>
+</div>
+</div>
+
+<div class="footer">
+  谢谢你的时间 🙏<br>
+  你的回答将帮助我们把经典智慧做成真正有用的东西<br>
+  <span style="font-size:11px;opacity:.6">本问卷完全匿名，数据仅用于研究</span>
+</div>
+
+<script>
+function startVoice(btn, qKey) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) { alert('您的浏览器不支持语音输入。请用 Safari 或 Chrome 打开。'); return; }
+  if (!btn._recog) {
+    btn._recog = new SpeechRecognition();
+    btn._recog.lang = 'zh-CN';
+    btn._recog.interimResults = true;
+    btn._recog.continuous = true;
+  }
+  const recog = btn._recog;
+  if (btn.classList.contains('recording')) {
+    recog.stop();
+    btn.classList.remove('recording');
+    btn.textContent = '🎤 语音输入';
+    return;
+  }
+  btn.classList.add('recording');
+  btn.textContent = '🔴 录音中...点击停止';
+  const textarea = document.querySelector('[data-q="'+qKey+'"]');
+  recog.onresult = (e) => {
+    let t = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) t += e.results[i][0].transcript;
+    textarea.value = t;
+  };
+  recog.onerror = () => { btn.classList.remove('recording'); btn.textContent = '🎤 语音输入'; };
+  recog.onend = () => { btn.classList.remove('recording'); btn.textContent = '🎤 语音输入'; };
+  recog.start();
+}
+
+function submitSurvey() {
+  const data = { timestamp: new Date().toISOString(), version: 'public' };
+  const seen = new Set();
+
+  // Textareas
+  document.querySelectorAll('textarea[data-q]').forEach(ta => {
+    if (ta.value.trim()) data[ta.getAttribute('data-q')] = ta.value.trim();
+    seen.add(ta.getAttribute('data-q'));
+  });
+
+  // Radio inputs
+  document.querySelectorAll('input[type=radio][data-q]:checked').forEach(r => {
+    data[r.getAttribute('data-q')] = r.value;
+    seen.add(r.getAttribute('data-q'));
+  });
+
+  // Checkbox groups
+  const checkGroups = {};
+  document.querySelectorAll('input[type=checkbox][data-q]:checked').forEach(cb => {
+    const q = cb.getAttribute('data-q');
+    if (!checkGroups[q]) checkGroups[q] = [];
+    checkGroups[q].push(cb.value);
+    seen.add(q);
+  });
+  Object.keys(checkGroups).forEach(q => { data[q] = checkGroups[q].join(', '); });
+
+  // Other text inputs
+  document.querySelectorAll('input[type=text][id$="_other"]').forEach(inp => {
+    if (inp.value.trim()) data[inp.id] = inp.value.trim();
+  });
+
+  const json = JSON.stringify(data, null, 2);
+  document.getElementById('status').className = 'status success';
+  document.getElementById('status').textContent = '✅ 感谢你的回答！\n\n你的数据已记录：\n\n' + json;
+  document.getElementById('status').style.display = 'block';
+  console.log('Public Survey:', data);
+  document.getElementById('status').scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>

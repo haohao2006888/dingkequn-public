@@ -452,7 +452,7 @@ function convertWebmToPCM(blob) {
   });
 }
 
-// 调用 Vercel STT 代理（Baidu ASR），可选 dev_pid 指定模型
+// 调用 Deno STT 代理（Baidu ASR），可选 dev_pid 指定模型
 function callSttProxy(pcmBase64, format, rate, devPid) {
   var controller = new AbortController();
   var timer = setTimeout(function() { controller.abort(); }, 15000);
@@ -880,23 +880,28 @@ function pickConsensus(results) {
 async function accurateTranscribe(blob, rounds) {
   rounds = rounds || 3;
   var devPids = [1537, 1536, 1537];
-  // 只转一次 PCM，避免重复解码
-  var pcmBase64 = await convertWebmToPCM(blob);
-  // 所有模型并行请求 ── HTTP/2 多路复用，最大时延 = 单次最慢响应
-  var results = [];
-  var promises = [];
-  for (var r = 0; r < rounds && r < devPids.length; r++) {
-    (function(pid) {
-      promises.push(callSttProxy(pcmBase64, 'pcm', 16000, pid).then(function(text) {
-        if (text && text.trim()) results.push(text.trim());
-      }).catch(function(e) {
-        console.warn('STT dev_pid=' + pid + ' failed:', e);
-      }));
-    })(devPids[r]);
+  try {
+    // 只转一次 PCM，避免重复解码
+    var pcmBase64 = await convertWebmToPCM(blob);
+    // 所有模型并行请求 ── HTTP/2 多路复用，最大时延 = 单次最慢响应
+    var results = [];
+    var promises = [];
+    for (var r = 0; r < rounds && r < devPids.length; r++) {
+      (function(pid) {
+        promises.push(callSttProxy(pcmBase64, 'pcm', 16000, pid).then(function(text) {
+          if (text && text.trim()) results.push(text.trim());
+        }).catch(function(e) {
+          console.warn('STT dev_pid=' + pid + ' failed:', e);
+        }));
+      })(devPids[r]);
+    }
+    await Promise.all(promises);
+    if (results.length === 0) return '';
+    return pickConsensus(results);
+  } catch (e) {
+    console.warn('PCM conversion failed:', e);
+    return '';
   }
-  await Promise.all(promises);
-  if (results.length === 0) return '';
-  return pickConsensus(results);
 }
 
 async function submitSurvey() {
@@ -929,6 +934,9 @@ setStatus('转文字 ' + tasks.length + '段并行...', '');
 var results = await Promise.all(tasks.map(function(t) {
   return accurateTranscribe(t.blob, 3).then(function(text) {
     return {key: t.key, text: text};
+  }).catch(function(e) {
+    console.warn('Part ' + t.key + ' transcribe failed:', e);
+    return {key: t.key, text: ''};
   });
 }));
 

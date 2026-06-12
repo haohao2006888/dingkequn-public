@@ -398,8 +398,8 @@ textarea.founder-textarea{min-height:100px;background:#fffef9}
 
 <script>
 // ===== Config =====
-// STT proxy (Vercel) — speech-to-text endpoint
-var STT_URL = 'https://tongxingzhe-stt-proxy.vercel.app/api/index';
+// STT proxy (Deno) — speech-to-text endpoint, /stt 路径
+var STT_URL = 'https://strong-butterfly-68.haohao2006888.deno.net/stt';
 // Data proxy (Deno) — GET/POST submissions + PUT part4
 var API_URL = 'https://strong-butterfly-68.haohao2006888.deno.net/';
 var DURATIONS = { bio: 360, 1: 360, 2: 360, 3: 360, 4: 360, cq: 360, info: 360 }; // all 6 min (360s)
@@ -454,23 +454,26 @@ function convertWebmToPCM(blob) {
 
 // 调用 Vercel STT 代理（Baidu ASR），可选 dev_pid 指定模型
 function callSttProxy(pcmBase64, format, rate, devPid) {
-  return new Promise(function(resolve, reject) {
-    try {
-      var xhr = new XMLHttpRequest();
-      xhr.open('POST', STT_URL, true);
-      xhr.setRequestHeader('Content-Type', 'application/json');
-      xhr.onload = function() {
-        try {
-          var resp = JSON.parse(xhr.responseText);
-          if (resp.text !== undefined) resolve(resp.text);
-          else reject(new Error(resp.error || 'STT failed'));
-        } catch(e) { reject(e); }
-      };
-      xhr.onerror = function() { reject(new Error('Network error')); };
-      var body = { audio: pcmBase64, format: format || 'pcm', rate: rate || 16000, lang: 'zh' };
-      if (devPid) body.dev_pid = devPid;
-      xhr.send(JSON.stringify(body));
-    } catch(e) { reject(e); }
+  var controller = new AbortController();
+  var timer = setTimeout(function() { controller.abort(); }, 15000);
+  var body = { audio: pcmBase64, format: format || 'pcm', rate: rate || 16000, lang: 'zh' };
+  if (devPid) body.dev_pid = devPid;
+  return fetch(STT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+    signal: controller.signal
+  }).then(function(r) {
+    clearTimeout(timer);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  }).then(function(data) {
+    if (data.text !== undefined) return data.text;
+    throw new Error(data.error || 'STT failed');
+  }).catch(function(e) {
+    clearTimeout(timer);
+    if (e.name === 'AbortError') throw new Error('STT 超时 (15s)');
+    throw e;
   });
 }
 

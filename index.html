@@ -541,6 +541,12 @@ vb._pcmCapture = null;
 if (id === 'vb-bio') {
 vb.querySelector('.vb-icon').textContent = '🎤';
 vb.querySelector('.vb-text').textContent = '点我录音介绍自己';
+} else if (id === 'vb-cq') {
+vb.querySelector('.vb-icon').textContent = '🎤';
+vb.querySelector('.vb-text').textContent = '点我录音补充说明（最长3分钟）';
+} else if (id === 'vb-info') {
+vb.querySelector('.vb-icon').textContent = '🎤';
+vb.querySelector('.vb-text').textContent = '点我录音补充说明（最长2分钟）';
 } else {
 var p = id.replace('vb-part', '');
 vb.querySelector('.vb-icon').textContent = '🎤';
@@ -554,6 +560,8 @@ var bioAp = document.getElementById('ap-bio'); if (bioAp) bioAp.classList.remove
 var ap = document.getElementById('ap-part' + p);
 if (ap) ap.classList.remove('show');
 });
+var cqAp = document.getElementById('ap-cq'); if (cqAp) cqAp.classList.remove('show');
+var infoAp = document.getElementById('ap-info'); if (infoAp) infoAp.classList.remove('show');
 // Reset submit button
 var b = document.getElementById('btnSubmit');
 b.style.display = '';
@@ -714,7 +722,7 @@ mediaRecorder = null;
 if (bar) {
 bar.classList.remove('recording');
 bar.querySelector('.vb-icon').textContent = '🎤';
-var labels2 = {bio:'点我重新录音',1:'点我重新录音（最长3分钟）',2:'点我重新录音（最长4分钟）',3:'点我重新录音（最长4分钟）',4:'点我重新录音（最长3分钟）'};
+var labels2 = {bio:'点我重新录音',1:'点我重新录音（最长3分钟）',2:'点我重新录音（最长4分钟）',3:'点我重新录音（最长4分钟）',4:'点我重新录音（最长3分钟）',cq:'点我重新录音（最长3分钟）',info:'点我重新录音（最长2分钟）'};
 var label = labels2[part] || '点我重新录音';
 bar.querySelector('.vb-text').textContent = label;
 bar.querySelector('.vb-status').textContent = '';
@@ -774,7 +782,6 @@ if (activeStream) activeStream.getTracks().forEach(function(t) { t.stop(); });
 try { mediaRecorder.stop(); } catch(e) {}
 }
 mediaRecorder = null;
-stopSpeechRecognition();
 currentPartKey = null;
 currentVoiceBar = null;
 secondsLeft = 0;
@@ -787,7 +794,7 @@ delete audioBlobs[part];
 if (bar) {
 bar.classList.remove('has-audio', 'recording');
 bar.querySelector('.vb-icon').textContent = '🎤';
-var delLabels = {bio:'点我录音介绍自己',1:'点我录音（最长3分钟）',2:'点我录音（最长4分钟）',3:'点我录音（最长4分钟）',4:'点我录音（最长3分钟）'};
+var delLabels = {bio:'点我录音介绍自己',1:'点我录音（最长3分钟）',2:'点我录音（最长4分钟）',3:'点我录音（最长4分钟）',4:'点我录音（最长3分钟）',cq:'点我录音补充说明（最长3分钟）',info:'点我录音补充说明（最长2分钟）'};
 bar.querySelector('.vb-text').textContent = delLabels[part] || '点我录音';
 bar.querySelector('.vb-status').textContent = '';
 // Clean up PCM capture
@@ -806,7 +813,10 @@ if (audio) { audio.src = ''; audio.removeAttribute('data-blob-url'); }
 }
 
 function partName(part) {
-return part === 'bio' ? 'bio' : 'part' + part;
+if (part === 'bio') return 'bio';
+if (part === 'cq') return 'cq';
+if (part === 'info') return 'info';
+return 'part' + part;
 }
 
 function formatTime(sec) {
@@ -1023,11 +1033,6 @@ d.textContent = s;
 return d.innerHTML;
 }
 
-</script>
-</body>
-</html>
-</body>
-</html>
 </script>
 </body>
 </html>

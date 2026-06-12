@@ -317,14 +317,14 @@ textarea.founder-textarea{min-height:100px;background:#fffef9}
 <label class="choice-opt"><input type="checkbox" name="cq6" value="过几天不行"><span class="opt-label">当时有效，过几天又不行了</span></label>
 <label class="choice-opt"><input type="checkbox" name="cq6" value="没失效"><span class="opt-label">没失效——我现在的方法挺好的</span></label>
 
-<div class="choice-q">7. 你觉得自己真正需要的是什么？</div>
-<label class="choice-opt"><input type="radio" name="cq7" value="随身东西"><span class="opt-label">一个「能被碰到」的随身东西——摸到它就回到那个状态</span></label>
-<label class="choice-opt"><input type="radio" name="cq7" value="自动提醒"><span class="opt-label">一个「每天自动出现」的提醒——不用我主动记</span></label>
-<label class="choice-opt"><input type="radio" name="cq7" value="社群"><span class="opt-label">一个「跟我一样的人」的社群——互相监督</span></label>
-<label class="choice-opt"><input type="radio" name="cq7" value="更简单方法"><span class="opt-label">一个「更简单的方法」——现在的方法太复杂</span></label>
-<label class="choice-opt"><input type="radio" name="cq7" value="不需要"><span class="opt-label">我不需要什么——知道了就够了</span></label>
+<div class="choice-q">7. 你觉得自己真正需要的是什么？（多选）</div>
+<label class="choice-opt"><input type="checkbox" name="cq7" value="随身东西"><span class="opt-label">一个「能被碰到」的随身东西——摸到它就回到那个状态</span></label>
+<label class="choice-opt"><input type="checkbox" name="cq7" value="自动提醒"><span class="opt-label">一个「每天自动出现」的提醒——不用我主动记</span></label>
+<label class="choice-opt"><input type="checkbox" name="cq7" value="社群"><span class="opt-label">一个「跟我一样的人」的社群——互相监督</span></label>
+<label class="choice-opt"><input type="checkbox" name="cq7" value="更简单方法"><span class="opt-label">一个「更简单的方法」——现在的方法太复杂</span></label>
+<label class="choice-opt"><input type="checkbox" name="cq7" value="不需要"><span class="opt-label">我不需要什么——知道了就够了</span></label>
 
-<div class="choice-q">8. 如果有一件金器（黄金材质、哑光拙面），上面刻着曾经打动你的那句话——摸到它就能回到那个通透的瞬间。你愿意试试吗？</div>
+<div class="choice-q">8. 如果有一件金器（黄金材质、哑光拙面），你买它的时候就知道——它能提醒你某一件你想记住的事，摸到它就能回到那个通透的瞬间。你愿意试试吗？</div>
 <label class="choice-opt"><input type="radio" name="cq8" value="非常愿意"><span class="opt-label">非常愿意——这正是我需要的</span></label>
 <label class="choice-opt"><input type="radio" name="cq8" value="有点兴趣"><span class="opt-label">有点兴趣——愿意了解一下</span></label>
 <label class="choice-opt"><input type="radio" name="cq8" value="不确定"><span class="opt-label">不确定——要看具体是什么</span></label>
@@ -562,11 +562,11 @@ b.disabled = false;
 isSubmitting = false;
 
 // Reset choice questions
-['cq1','cq2','cq3','cq4','cq7','cq8','cq9','cq10','cq11','cq12','cq13'].forEach(function(name) {
+['cq1','cq2','cq3','cq4','cq8','cq9','cq10','cq11','cq12','cq13'].forEach(function(name) {
   var radios = document.getElementsByName(name);
   for (var i = 0; i < radios.length; i++) { radios[i].checked = false; }
 });
-['cq5','cq6'].forEach(function(name) {
+['cq5','cq6','cq7'].forEach(function(name) {
   var checks = document.getElementsByName(name);
   for (var i = 0; i < checks.length; i++) { checks[i].checked = false; }
 });
@@ -929,7 +929,7 @@ if (audioBlobs['info']) {
 }
 
 // Choice questions — single select
-['cq1','cq2','cq3','cq4','cq7','cq8','cq9','cq10','cq11','cq12','cq13'].forEach(function(name) {
+['cq1','cq2','cq3','cq4','cq8','cq9','cq10','cq11','cq12','cq13'].forEach(function(name) {
   var radios = document.getElementsByName(name);
   for (var i = 0; i < radios.length; i++) {
     if (radios[i].checked) {
@@ -943,8 +943,8 @@ if (audioBlobs['info']) {
     }
   }
 });
-// Choice questions — multi select (cq5, cq6)
-['cq5','cq6'].forEach(function(name) {
+// Choice questions — multi select (cq5, cq6, cq7)
+['cq5','cq6','cq7'].forEach(function(name) {
   var checks = document.getElementsByName(name);
   var selected = [];
   for (var i = 0; i < checks.length; i++) {

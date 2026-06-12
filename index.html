@@ -452,8 +452,8 @@ function convertWebmToPCM(blob) {
   });
 }
 
-// 调用 Deno 代理的 /stt 接口（Baidu ASR）
-function callSttProxy(pcmBase64, format, rate) {
+// 调用 Vercel STT 代理（Baidu ASR），可选 dev_pid 指定模型
+function callSttProxy(pcmBase64, format, rate, devPid) {
   return new Promise(function(resolve, reject) {
     try {
       var xhr = new XMLHttpRequest();
@@ -467,7 +467,9 @@ function callSttProxy(pcmBase64, format, rate) {
         } catch(e) { reject(e); }
       };
       xhr.onerror = function() { reject(new Error('Network error')); };
-      xhr.send(JSON.stringify({ audio: pcmBase64, format: format || 'pcm', rate: rate || 16000, lang: 'zh' }));
+      var body = { audio: pcmBase64, format: format || 'pcm', rate: rate || 16000, lang: 'zh' };
+      if (devPid) body.dev_pid = devPid;
+      xhr.send(JSON.stringify(body));
     } catch(e) { reject(e); }
   });
 }
@@ -875,10 +877,13 @@ function pickConsensus(results) {
 async function accurateTranscribe(blob, rounds) {
   rounds = rounds || 3;
   var results = [];
+  // 每轮用不同的 Baidu 模型，产生不同的识别结果再共识比对
+  // dev_pid 1537=普通话+标点(最准), 1536=普通话无标点(不同分词), 1936=远场普通话
+  var devPids = [1537, 1536, 1537];
   for (var r = 0; r < rounds; r++) {
     try {
       var pcmBase64 = await convertWebmToPCM(blob);
-      var text = await callSttProxy(pcmBase64, 'pcm', 16000);
+      var text = await callSttProxy(pcmBase64, 'pcm', 16000, devPids[r] || 1537);
       if (text && text.trim()) results.push(text.trim());
     } catch(e) {
       console.warn('STT round ' + (r+1) + ' failed:', e);

@@ -876,19 +876,22 @@ function pickConsensus(results) {
 
 async function accurateTranscribe(blob, rounds) {
   rounds = rounds || 3;
-  var results = [];
-  // 每轮用不同的 Baidu 模型，产生不同的识别结果再共识比对
-  // dev_pid 1537=普通话+标点(最准), 1536=普通话无标点(不同分词), 1936=远场普通话
   var devPids = [1537, 1536, 1537];
-  for (var r = 0; r < rounds; r++) {
-    try {
-      var pcmBase64 = await convertWebmToPCM(blob);
-      var text = await callSttProxy(pcmBase64, 'pcm', 16000, devPids[r] || 1537);
-      if (text && text.trim()) results.push(text.trim());
-    } catch(e) {
-      console.warn('STT round ' + (r+1) + ' failed:', e);
-    }
+  // 只转一次 PCM，避免重复解码
+  var pcmBase64 = await convertWebmToPCM(blob);
+  // 所有模型并行请求 ── HTTP/2 多路复用，最大时延 = 单次最慢响应
+  var results = [];
+  var promises = [];
+  for (var r = 0; r < rounds && r < devPids.length; r++) {
+    (function(pid) {
+      promises.push(callSttProxy(pcmBase64, 'pcm', 16000, pid).then(function(text) {
+        if (text && text.trim()) results.push(text.trim());
+      }).catch(function(e) {
+        console.warn('STT dev_pid=' + pid + ' failed:', e);
+      }));
+    })(devPids[r]);
   }
+  await Promise.all(promises);
   if (results.length === 0) return '';
   return pickConsensus(results);
 }
@@ -897,7 +900,6 @@ async function submitSurvey() {
 if (isSubmitting) return;
 if (!currentUser) { setStatus('请先登录', 'error'); return; }
 
-// Validate: at least one audio blob
 var hasAudio = !!audioBlobs['bio'];
 for (var i = 1; i <= 4; i++) { if (audioBlobs[i]) hasAudio = true; }
 if (audioBlobs['cq']) hasAudio = true;
@@ -908,40 +910,33 @@ isSubmitting = true;
 var btn = document.getElementById('btnSubmit');
 btn.textContent = '提交中...';
 btn.disabled = true;
-setStatus('正在转文字...', '');
 
 try {
-var submission = {
-surveyType: 'dingkequn-public',
-userName: currentUser.name,
-contact: currentUser.contact || '',
-time: new Date().toISOString(),
-ua: navigator.userAgent
-};
-
-// Transcribe bio with multi-round consensus
-if (audioBlobs['bio']) {
-  setStatus('转文字: 个人简介 (3轮比对)...', '');
-  submission.bio = await accurateTranscribe(audioBlobs['bio'], 3);
-}
-
-// Transcribe each voice part with multi-round consensus
+// 收集所有已录音的段 ── 并行转写
+var tasks = [];
+if (audioBlobs['bio']) tasks.push({key: 'bio', blob: audioBlobs['bio']});
 for (var i = 1; i <= 4; i++) {
-  if (audioBlobs[i]) {
-    setStatus('转文字: 第' + i + '部分 (3轮比对)...', '');
-    submission['part' + i + '_text'] = await accurateTranscribe(audioBlobs[i], 3);
-  }
+  if (audioBlobs[i]) tasks.push({key: 'part' + i + '_text', blob: audioBlobs[i]});
 }
+if (audioBlobs['cq']) tasks.push({key: 'cq_audio_text', blob: audioBlobs['cq']});
+if (audioBlobs['info']) tasks.push({key: 'info_audio_text', blob: audioBlobs['info']});
 
-// Transcribe choice section audio
-if (audioBlobs['cq']) {
-  setStatus('转文字: 快速画像补充 (3轮比对)...', '');
-  submission.cq_audio_text = await accurateTranscribe(audioBlobs['cq'], 3);
-}
-if (audioBlobs['info']) {
-  setStatus('转文字: 基本信息补充 (3轮比对)...', '');
-  submission.info_audio_text = await accurateTranscribe(audioBlobs['info'], 3);
-}
+setStatus('转文字 ' + tasks.length + '段并行...', '');
+
+var results = await Promise.all(tasks.map(function(t) {
+  return accurateTranscribe(t.blob, 3).then(function(text) {
+    return {key: t.key, text: text};
+  });
+}));
+
+var submission = {
+  surveyType: 'dingkequn-public',
+  userName: currentUser.name,
+  contact: currentUser.contact || '',
+  time: new Date().toISOString(),
+  ua: navigator.userAgent
+};
+results.forEach(function(r) { submission[r.key] = r.text; });
 
 // Choice questions — single select
 ['cq1','cq2','cq3','cq4','cq8','cq9','cq10','cq11','cq12','cq13'].forEach(function(name) {
@@ -971,7 +966,6 @@ if (audioBlobs['info']) {
   if (otherEl && otherEl.value.trim()) submission[name + '_other'] = otherEl.value.trim();
 });
 
-// Submit to cloud
 setStatus('提交到云端...', '');
 await submitToCloud(submission, 0, btn);
 

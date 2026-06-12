@@ -93,6 +93,18 @@ textarea.founder-textarea{min-height:100px;background:#fffef9}
 /*** auto-expand textarea on mobile ***/
 @media(max-width:768px){textarea{resize:none}}
 
+/* ===== Choice Questions ===== */
+.choice-section{margin:20px 0}
+.choice-section .section-label{font-size:13px;color:#8c7a5c;font-weight:400;margin-left:6px}
+.choice-q{font-size:15px;font-weight:700;color:#1a1206;margin:20px 0 10px;padding-top:16px;border-top:1px solid #f0ead8}
+.choice-q:first-of-type{border-top:none;padding-top:0;margin-top:4px}
+.choice-opt{display:flex;align-items:flex-start;gap:10px;padding:9px 14px;margin:3px 0;border-radius:8px;cursor:pointer;transition:background .15s;font-size:14px;color:#4a3828;line-height:1.6}
+.choice-opt:hover{background:#fdf8f0}
+.choice-opt input[type="radio"],.choice-opt input[type="checkbox"]{flex-shrink:0;margin-top:3px;accent-color:#c9a96e;width:16px;height:16px}
+.choice-opt .opt-label{flex:1}
+.choice-opt .opt-other{display:none;margin-top:6px;width:100%;padding:8px 12px;font-size:14px;border:1.6px solid #e8dcc8;border-radius:8px;background:#fdf8f0;font-family:inherit}
+.choice-opt.selected{background:#f5f0e8}
+
 .btn-row{display:flex;gap:12px;margin:24px 0;justify-content:center}
 .btn-back{flex:1;padding:14px;background:#fff;color:#4a3828;border:1.6px solid #e8dcc8;border-radius:14px;font-size:16px;font-weight:600;cursor:pointer;max-width:160px}
 .btn-submit{flex:1;padding:14px;background:#2c2416;color:#fdf8f0;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;max-width:200px;letter-spacing:1px}
@@ -134,22 +146,9 @@ textarea.founder-textarea{min-height:100px;background:#fffef9}
 <input type="text" id="loginName" placeholder="你的名字" maxlength="50" autocomplete="name">
 <label style="margin-top:4px">手机号 / 微信号（选填）</label>
 <input type="text" id="loginContact" placeholder="方便后续回访" maxlength="60" autocomplete="tel">
-<p class="lc-hint">你的名字仅用于标记记录，可随时查看自己的填写历史</p>
+<p class="lc-hint">匿名调研，名字仅用于区分不同提交记录</p>
 <button class="btn-primary" onclick="doLogin()">开始答题</button>
 </div>
-</div>
-</div>
-
-<!-- ==================== 面板视图 ==================== -->
-<div class="view" id="viewDashboard">
-<div class="dash-wrap">
-<div class="dash-user" id="dashUserCard"></div>
-<div class="dash-actions">
-<button class="btn-new" onclick="startNewSurvey()">✚ 新建调研</button>
-<button class="btn-logout" onclick="doLogout()">切换账号</button>
-</div>
-<div class="history-title">📋 历史记录</div>
-<div id="historyList"></div>
 </div>
 </div>
 
@@ -262,15 +261,116 @@ textarea.founder-textarea{min-height:100px;background:#fffef9}
 <textarea id="text-part4" placeholder="语音识别的内容会出现在这里，也可以手动输入..."></textarea>
 </div>
 
+<!-- ==================== 快速画像 · 选择题（选填） ==================== -->
+<div class="q-card choice-section">
+<div class="q-num">快速画像 <span class="section-label">选填，帮助更精准分析</span></div>
+
+<div class="choice-q">1. 你接触过儒释道/国学经典吗？</div>
+<label class="choice-opt"><input type="radio" name="cq1" value="深度"><span class="opt-label">深度接触——读过原文、上过课、在生活中试过</span></label>
+<label class="choice-opt"><input type="radio" name="cq1" value="一般"><span class="opt-label">一般接触——知道一些名言、偶尔看看相关内容</span></label>
+<label class="choice-opt"><input type="radio" name="cq1" value="浅浅"><span class="opt-label">浅浅接触——刷到过视频/文章，没深究</span></label>
+<label class="choice-opt"><input type="radio" name="cq1" value="没接触"><span class="opt-label">没接触过</span></label>
+
+<div class="choice-q">2. 如果选一个最打动你的经典，是哪个？</div>
+<label class="choice-opt"><input type="radio" name="cq2" value="道德经"><span class="opt-label">道德经 / 老子</span></label>
+<label class="choice-opt"><input type="radio" name="cq2" value="论语"><span class="opt-label">论语 / 儒家</span></label>
+<label class="choice-opt"><input type="radio" name="cq2" value="佛经"><span class="opt-label">佛经 / 禅宗</span></label>
+<label class="choice-opt"><input type="radio" name="cq2" value="庄子"><span class="opt-label">庄子</span></label>
+<label class="choice-opt"><input type="radio" name="cq2" value="阳明心学"><span class="opt-label">阳明心学</span></label>
+<label class="choice-opt"><input type="radio" name="cq2" value="易经"><span class="opt-label">易经</span></label>
+<label class="choice-opt" style="flex-wrap:wrap"><input type="radio" name="cq2" value="其他"><span class="opt-label">其他：</span><input type="text" class="opt-other" id="cq2_other" placeholder="请填写" style="display:inline-block;width:auto;flex:1;margin-top:0;margin-left:6px"></label>
+
+<div class="choice-q">3. 你曾在生活中尝试「用到」它吗？</div>
+<label class="choice-opt"><input type="radio" name="cq3" value="经常"><span class="opt-label">经常——几乎每天都会想起来</span></label>
+<label class="choice-opt"><input type="radio" name="cq3" value="有时候"><span class="opt-label">有时候——关键时刻能想起来</span></label>
+<label class="choice-opt"><input type="radio" name="cq3" value="很少"><span class="opt-label">很少——学的时候觉得对，合上书就忘了</span></label>
+<label class="choice-opt"><input type="radio" name="cq3" value="从不"><span class="opt-label">从不——只当知识学，没想过用在生活里</span></label>
+
+<div class="choice-q">4. 在关键时刻「忘了用它」——这种情况你经历过吗？</div>
+<label class="choice-opt"><input type="radio" name="cq4" value="经常"><span class="opt-label">经常——几乎每次都忘</span></label>
+<label class="choice-opt"><input type="radio" name="cq4" value="有时候"><span class="opt-label">有时候——大事能想起来，小事忘了</span></label>
+<label class="choice-opt"><input type="radio" name="cq4" value="很少"><span class="opt-label">很少——大多数时候能想起来</span></label>
+<label class="choice-opt"><input type="radio" name="cq4" value="从不"><span class="opt-label">从不——我随时都能调用</span></label>
+
+<div class="choice-q">5. 你试过哪些方法提醒自己？（多选）</div>
+<label class="choice-opt"><input type="checkbox" name="cq5" value="屏保"><span class="opt-label">手机屏保/壁纸</span></label>
+<label class="choice-opt"><input type="checkbox" name="cq5" value="抄经"><span class="opt-label">抄经/写在本子上</span></label>
+<label class="choice-opt"><input type="checkbox" name="cq5" value="便签"><span class="opt-label">贴便签/放在桌上</span></label>
+<label class="choice-opt"><input type="checkbox" name="cq5" value="手串"><span class="opt-label">戴手串/佛珠/饰品</span></label>
+<label class="choice-opt"><input type="checkbox" name="cq5" value="打坐"><span class="opt-label">打坐/冥想/站桩</span></label>
+<label class="choice-opt"><input type="checkbox" name="cq5" value="音频"><span class="opt-label">听音频/播客</span></label>
+<label class="choice-opt"><input type="checkbox" name="cq5" value="硬扛"><span class="opt-label">什么都不做，硬扛</span></label>
+<label class="choice-opt" style="flex-wrap:wrap"><input type="checkbox" name="cq5" value="其他"><span class="opt-label">其他：</span><input type="text" class="opt-other" id="cq5_other" placeholder="请填写" style="display:inline-block;width:auto;flex:1;margin-top:0;margin-left:6px"></label>
+
+<div class="choice-q">6. 这些方法为什么没持续？（多选）</div>
+<label class="choice-opt"><input type="checkbox" name="cq6" value="视觉麻木"><span class="opt-label">视觉麻木了——看多了就不注意了</span></label>
+<label class="choice-opt"><input type="checkbox" name="cq6" value="手在做心没跟上"><span class="opt-label">手在做心没跟上——变成机械动作</span></label>
+<label class="choice-opt"><input type="checkbox" name="cq6" value="不方便"><span class="opt-label">不方便——在别人面前不好意思</span></label>
+<label class="choice-opt"><input type="checkbox" name="cq6" value="忘了带"><span class="opt-label">忘了带/丢了——物理物品不在身边</span></label>
+<label class="choice-opt"><input type="checkbox" name="cq6" value="过几天不行"><span class="opt-label">当时有效，过几天又不行了</span></label>
+<label class="choice-opt"><input type="checkbox" name="cq6" value="没失效"><span class="opt-label">没失效——我现在的方法挺好的</span></label>
+
+<div class="choice-q">7. 你觉得自己真正需要的是什么？</div>
+<label class="choice-opt"><input type="radio" name="cq7" value="随身东西"><span class="opt-label">一个「能被碰到」的随身东西——摸到它就回到那个状态</span></label>
+<label class="choice-opt"><input type="radio" name="cq7" value="自动提醒"><span class="opt-label">一个「每天自动出现」的提醒——不用我主动记</span></label>
+<label class="choice-opt"><input type="radio" name="cq7" value="社群"><span class="opt-label">一个「跟我一样的人」的社群——互相监督</span></label>
+<label class="choice-opt"><input type="radio" name="cq7" value="更简单方法"><span class="opt-label">一个「更简单的方法」——现在的方法太复杂</span></label>
+<label class="choice-opt"><input type="radio" name="cq7" value="不需要"><span class="opt-label">我不需要什么——知道了就够了</span></label>
+
+<div class="choice-q">8. 如果有一件金器（黄金材质、哑光拙面），上面刻着曾经打动你的那句话——摸到它就能回到那个通透的瞬间。你愿意试试吗？</div>
+<label class="choice-opt"><input type="radio" name="cq8" value="非常愿意"><span class="opt-label">非常愿意——这正是我需要的</span></label>
+<label class="choice-opt"><input type="radio" name="cq8" value="有点兴趣"><span class="opt-label">有点兴趣——愿意了解一下</span></label>
+<label class="choice-opt"><input type="radio" name="cq8" value="不确定"><span class="opt-label">不确定——要看具体是什么</span></label>
+<label class="choice-opt"><input type="radio" name="cq8" value="不需要"><span class="opt-label">不太需要——提醒方式够用了</span></label>
+
+<div class="choice-q">9. 你觉得这样一件东西值多少钱？（你的心理价位）</div>
+<label class="choice-opt"><input type="radio" name="cq9" value="300-800"><span class="opt-label">¥300–800</span></label>
+<label class="choice-opt"><input type="radio" name="cq9" value="800-2000"><span class="opt-label">¥800–2000</span></label>
+<label class="choice-opt"><input type="radio" name="cq9" value="2000-5000"><span class="opt-label">¥2000–5000</span></label>
+<label class="choice-opt"><input type="radio" name="cq9" value="5000-15000"><span class="opt-label">¥5000–15000</span></label>
+<label class="choice-opt"><input type="radio" name="cq9" value="15000+"><span class="opt-label">¥15000+</span></label>
+</div>
+
+<!-- ==================== 基本信息 · 选择题 ==================== -->
+<div class="q-card choice-section">
+<div class="q-num">基本信息 <span class="section-label">完全匿名，不会关联到个人</span></div>
+
+<div class="choice-q">10. 你的性别</div>
+<label class="choice-opt"><input type="radio" name="cq10" value="男"><span class="opt-label">男</span></label>
+<label class="choice-opt"><input type="radio" name="cq10" value="女"><span class="opt-label">女</span></label>
+
+<div class="choice-q">11. 你的年龄</div>
+<label class="choice-opt"><input type="radio" name="cq11" value="18-24"><span class="opt-label">18–24</span></label>
+<label class="choice-opt"><input type="radio" name="cq11" value="25-34"><span class="opt-label">25–34</span></label>
+<label class="choice-opt"><input type="radio" name="cq11" value="35-44"><span class="opt-label">35–44</span></label>
+<label class="choice-opt"><input type="radio" name="cq11" value="45-54"><span class="opt-label">45–54</span></label>
+<label class="choice-opt"><input type="radio" name="cq11" value="55+"><span class="opt-label">55+</span></label>
+
+<div class="choice-q">12. 你目前生活在</div>
+<label class="choice-opt"><input type="radio" name="cq12" value="一线"><span class="opt-label">一线城市（北上广深）</span></label>
+<label class="choice-opt"><input type="radio" name="cq12" value="新一线"><span class="opt-label">新一线城市（杭州/成都/武汉等）</span></label>
+<label class="choice-opt"><input type="radio" name="cq12" value="二线"><span class="opt-label">二线城市</span></label>
+<label class="choice-opt"><input type="radio" name="cq12" value="三线以下"><span class="opt-label">三线及以下</span></label>
+<label class="choice-opt"><input type="radio" name="cq12" value="海外"><span class="opt-label">海外</span></label>
+
+<div class="choice-q">13. 你的职业领域</div>
+<label class="choice-opt"><input type="radio" name="cq13" value="管理者"><span class="opt-label">企业管理者/创业者</span></label>
+<label class="choice-opt"><input type="radio" name="cq13" value="自由职业"><span class="opt-label">自由职业/个体</span></label>
+<label class="choice-opt"><input type="radio" name="cq13" value="职员"><span class="opt-label">公司职员</span></label>
+<label class="choice-opt"><input type="radio" name="cq13" value="教育文化"><span class="opt-label">教育/文化/艺术</span></label>
+<label class="choice-opt"><input type="radio" name="cq13" value="学生"><span class="opt-label">学生</span></label>
+<label class="choice-opt" style="flex-wrap:wrap"><input type="radio" name="cq13" value="其他"><span class="opt-label">其他：</span><input type="text" class="opt-other" id="cq13_other" placeholder="请填写" style="display:inline-block;width:auto;flex:1;margin-top:0;margin-left:6px"></label>
+</div>
+
 <div class="submit-status" id="submitStatus"></div>
 <div class="btn-row">
-<button class="btn-back" onclick="backToDashboard()">← 返回</button>
+<button class="btn-back" onclick="doLogout()">← 退出</button>
 <button class="btn-submit" id="btnSubmit" onclick="submitSurvey()">✓ 提交</button>
 </div>
 <div class="thanks-box" id="thanksBox">
 <h2>提交成功 🙏</h2>
 <p>感谢你的分享！你的声音对我们非常重要。</p>
-<button class="btn-back-dash" onclick="backToDashboard()">返回我的面板</button>
+<button class="btn-back-dash" onclick="doLogout()">🔁 重新填写</button>
 </div>
 </div>
 </div>
@@ -287,7 +387,6 @@ var DURATIONS = { bio: 60, 1: 180, 2: 240, 3: 240, 4: 180 }; // seconds per part
 
 // ===== State (no local storage, data lives on GitHub via Deno proxy) =====
 var currentUser = null;
-var editingSubmission = null;
 
 // ===== Audio State =====
 var mediaRecorder = null;
@@ -373,111 +472,11 @@ if (/MicroMessenger/i.test(navigator.userAgent)) {
 document.getElementById('browserNotice').style.display = 'block';
 }
 
-showDashboard();
-}
-
-async function showDashboard() {
-showView('viewDashboard');
-document.getElementById('headerSub').textContent = currentUser.name + ' 的调研面板';
-
-// Clear immediately to prevent flash of old user data
-window._dashboardSubs = null;
-document.getElementById('dashUserCard').innerHTML = '';
-document.getElementById('historyList').innerHTML = '<div class="empty-history">加载中...</div>';
-
-// Load submissions — try Deno proxy first, fallback to GitHub raw
-var subs = [];
-var all = null;
-try {
-var resp = await fetch(API_URL);
-if (resp.ok) all = await resp.json();
-} catch(e) { console.warn('Proxy fetch failed, trying GitHub fallback:', e.message); }
-
-// Fallback: read directly from GitHub raw (works even when proxy is down)
-if (!all || (Array.isArray(all) && all.length === 0)) {
-try {
-var rawResp = await fetch(
-'https://raw.githubusercontent.com/haohao2006888/tongxingzhe-survey/main/data/submissions.json',
-{ headers: { 'Accept': 'application/json' } }
-);
-if (rawResp.ok) {
-all = await rawResp.json();
-// Strip audio base64 fields (they bloat payload and aren't needed for dashboard)
-all = all.map(function(s) {
-var clean = {};
-Object.keys(s).forEach(function(k) {
-if (!k.endsWith('_audio') && k !== 'ua') clean[k] = s[k];
-});
-return clean;
-});
-}
-} catch(e2) { console.error('GitHub fallback also failed:', e2.message); }
-}
-
-if (all) {
-subs = all.filter(function(s) { return s.userName === currentUser.name; });
-subs.sort(function(a, b) { return new Date(b.time) - new Date(a.time); });
-}
-
-// User card
-var card = document.getElementById('dashUserCard');
-card.innerHTML =
-'<div class="du-name">' + escapeHtml(currentUser.name) + '</div>' +
-'<div class="du-meta">📋 共 ' + subs.length + ' 篇记录' +
-(currentUser.contact ? ' · ' + escapeHtml(currentUser.contact) : '') +
-'</div>';
-
-// History
-var list = document.getElementById('historyList');
-if (subs.length === 0) {
-list.innerHTML = '<div class="empty-history">还没有记录，点击「新建调研」开始吧</div>';
-} else {
-list.innerHTML = subs.map(function(s, i) {
-var d = new Date(s.time);
-var dateStr = d.getFullYear() + '/' + pad(d.getMonth()+1) + '/' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
-var preview = (s.part1_text || s.part2_text || s.part3_text || s.part4_text || '').substring(0, 60);
-var parts = [];
-if (s.part1_text) parts.push('习惯');
-if (s.part2_text) parts.push('痛点');
-if (s.part3_text) parts.push('践行');
-if (s.part4_text) parts.push('金器');
-return '<div class="history-item" onclick="viewSubmission(' + i + ')">' +
-'<div class="hi-date">' + dateStr + '</div>' +
-'<div class="hi-preview">' + escapeHtml(preview) + (preview.length >= 60 ? '...' : '') + '</div>' +
-'<div class="hi-parts">' + parts.join(' · ') + '</div>' +
-'</div>';
-}).join('');
-}
-// Store subs for viewSubmission reference
-window._dashboardSubs = subs;
-}
-
-function viewSubmission(idx) {
-var sub = window._dashboardSubs && window._dashboardSubs[idx];
-if (!sub) return;
-editingSubmission = sub;
 showView('viewSurvey');
-resetSurveyForm();
-fillSurveyForm(sub);
-document.getElementById('submitStatus').textContent = '📖 历史记录（只读）';
-document.getElementById('submitStatus').className = 'submit-status';
-document.getElementById('thanksBox').classList.remove('show');
-document.getElementById('surveyForm').style.display = '';
-var btn = document.getElementById('btnSubmit');
-btn.style.display = 'none';
-document.querySelector('.btn-back').textContent = '← 返回面板';
-}
-
-function fillSurveyForm(sub) {
-document.getElementById('text-bio').value = sub.bio || '';
-document.getElementById('text-part1').value = sub.part1_text || '';
-document.getElementById('text-part2').value = sub.part2_text || '';
-document.getElementById('text-part3').value = sub.part3_text || '';
-document.getElementById('text-part4').value = sub.part4_text || '';
+startNewSurvey();
 }
 
 function startNewSurvey() {
-editingSubmission = null;
 showView('viewSurvey');
 resetSurveyForm();
 document.getElementById('submitStatus').textContent = '';
@@ -486,7 +485,7 @@ document.getElementById('thanksBox').classList.remove('show');
 document.getElementById('surveyForm').style.display = '';
 document.getElementById('btnSubmit').textContent = '✓ 提交';
 document.getElementById('btnSubmit').style.display = '';
-document.querySelector('.btn-back').textContent = '← 返回';
+document.querySelector('.btn-back').textContent = '← 退出';
 
 // Keep-warm: pre-ping STT proxy to eliminate cold start
 var keepWarm = new XMLHttpRequest();
@@ -494,26 +493,15 @@ keepWarm.open('GET', STT_URL, true);
 keepWarm.send();
 }
 
-function backToDashboard() {
-stopAllRecording();
-editingSubmission = null;
-showDashboard();
-}
-
 function doLogout() {
 stopAllRecording();
 currentUser = null;
-editingSubmission = null;
-window._dashboardSubs = null;
 audioBlobs = {};
 resetSurveyForm();
-// Clear dashboard DOM to prevent cross-account data leak
-document.getElementById('dashUserCard').innerHTML = '';
-document.getElementById('historyList').innerHTML = '';
 document.getElementById('loginName').value = '';
 document.getElementById('loginContact').value = '';
 document.getElementById('browserNotice').style.display = 'none';
-document.getElementById('headerSub').textContent = '请用语音说出你的真实想法';
+document.getElementById('headerSub').textContent = '了解你的国学践行习惯，帮助我们做得更好';
 showView('viewLogin');
 }
 
@@ -560,6 +548,19 @@ b.style.display = '';
 b.textContent = '✓ 提交';
 b.disabled = false;
 isSubmitting = false;
+
+// Reset choice questions
+['cq1','cq2','cq3','cq4','cq7','cq8','cq9','cq10','cq11','cq12','cq13'].forEach(function(name) {
+  var radios = document.getElementsByName(name);
+  for (var i = 0; i < radios.length; i++) { radios[i].checked = false; }
+});
+['cq5','cq6'].forEach(function(name) {
+  var checks = document.getElementsByName(name);
+  for (var i = 0; i < checks.length; i++) { checks[i].checked = false; }
+});
+['cq2_other','cq5_other','cq13_other'].forEach(function(id) {
+  var el = document.getElementById(id); if (el) el.value = '';
+});
 }
 
 function stopAllRecording() {
@@ -927,15 +928,12 @@ if (ap) ap.classList.remove('show');
 var audio = document.getElementById('audio-' + partName(part));
 if (audio) { audio.src = ''; audio.removeAttribute('data-blob-url'); }
 
-// Clear textarea only in new-survey mode (text came from recording)
-// In edit mode, text is saved data from server — keep it
-if (!editingSubmission) {
+// Clear textarea
 var textareaId = (part === 'bio') ? 'text-bio' : 'text-part' + part;
 var textarea = document.getElementById(textareaId);
 if (textarea) {
 textarea.value = '';
 textarea.removeAttribute('data-speech-active');
-}
 }
 }
 
@@ -1000,6 +998,36 @@ ua: navigator.userAgent
 for (var i = 1; i <= 4; i++) {
 submission['part' + i + '_text'] = document.getElementById('text-part' + i).value.trim();
 }
+
+// Choice questions — single select
+['cq1','cq2','cq3','cq4','cq7','cq8','cq9','cq10','cq11','cq12','cq13'].forEach(function(name) {
+  var radios = document.getElementsByName(name);
+  for (var i = 0; i < radios.length; i++) {
+    if (radios[i].checked) {
+      submission[name] = radios[i].value;
+      // Capture "其他" text if applicable
+      var otherId = name + '_other';
+      var otherEl = document.getElementById(otherId);
+      if (otherEl && radios[i].value === '其他') {
+        submission[name + '_other'] = otherEl.value.trim();
+      }
+      break;
+    }
+  }
+});
+// Choice questions — multi select (cq5, cq6)
+['cq5','cq6'].forEach(function(name) {
+  var checks = document.getElementsByName(name);
+  var selected = [];
+  for (var i = 0; i < checks.length; i++) {
+    if (checks[i].checked) selected.push(checks[i].value);
+  }
+  if (selected.length > 0) submission[name] = selected;
+  // Capture "其他" text for multi-select
+  var otherId = name + '_other';
+  var otherEl = document.getElementById(otherId);
+  if (otherEl && otherEl.value.trim()) submission[name + '_other'] = otherEl.value.trim();
+});
 
 // Submit to cloud
 setStatus('提交到云端...', '');

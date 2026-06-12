@@ -113,6 +113,14 @@ textarea.founder-textarea{min-height:100px;background:#fffef9}
 .submit-status.error{color:#c62828}
 .submit-status.success{color:#2e7d32}
 
+.progress-wrap{display:none;margin:10px 0}
+.progress-wrap.active{display:block}
+.progress-bar{width:100%;height:6px;background:#e8dcc8;border-radius:3px;overflow:hidden}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,#c9a96e,#2c2416);border-radius:3px;transition:width .5s ease;width:0%}
+.progress-bar-fill.indeterminate{width:40%!important;animation:barSlide 1.8s ease-in-out infinite}
+@keyframes barSlide{0%{transform:translateX(-100%)}100%{transform:translateX(350%)}}
+.progress-msg{font-size:12px;color:#8c7a5c;text-align:center;margin-top:5px}
+
 .thanks-box{display:none;text-align:center;padding:40px 24px;background:#fff;border-radius:14px;margin:20px 0}
 .thanks-box.show{display:block}
 .thanks-box h2{font-size:24px;color:#1a1206;margin-bottom:12px}
@@ -382,6 +390,10 @@ textarea.founder-textarea{min-height:100px;background:#fffef9}
 </div>
 
 <div class="submit-status" id="submitStatus"></div>
+<div class="progress-wrap" id="progressWrap">
+<div class="progress-bar"><div class="progress-bar-fill" id="progressBar"></div></div>
+<div class="progress-msg" id="progressMsg">请不要关闭页面，正在处理...</div>
+</div>
 <div class="btn-row">
 <button class="btn-back" onclick="doLogout()">← 退出</button>
 <button class="btn-submit" id="btnSubmit" onclick="submitSurvey()">✓ 提交</button>
@@ -848,6 +860,26 @@ el.textContent = msg;
 el.className = 'submit-status ' + (type || '');
 }
 
+function showProgress(msg, mode) {
+mode = mode || 'indeterminate';
+var wrap = document.getElementById('progressWrap');
+var bar = document.getElementById('progressBar');
+var msgEl = document.getElementById('progressMsg');
+if (!mode || mode === 'hide') {
+wrap.classList.remove('active');
+return;
+}
+wrap.classList.add('active');
+msgEl.textContent = msg || '请不要关闭页面，正在处理...';
+if (mode === 'indeterminate') {
+bar.classList.add('indeterminate');
+bar.style.width = '';
+} else {
+bar.classList.remove('indeterminate');
+bar.style.width = (mode === true ? '100%' : (typeof mode === 'number' ? mode + '%' : mode));
+}
+}
+
 // ── Multi-round STT with consensus for accuracy ──
 function similarity(a, b) {
   if (!a || !b) return 0;
@@ -918,6 +950,7 @@ isSubmitting = true;
 var btn = document.getElementById('btnSubmit');
 btn.textContent = '提交中...';
 btn.disabled = true;
+showProgress('正在初始化...', 'indeterminate');
 
 try {
 // 收集所有已录音的段 ── 并行转写
@@ -930,7 +963,7 @@ if (audioBlobs['cq']) tasks.push({key: 'cq_audio_text', blob: audioBlobs['cq']})
 if (audioBlobs['info']) tasks.push({key: 'info_audio_text', blob: audioBlobs['info']});
 
 setStatus('转文字 ' + tasks.length + '段并行...', '');
-
+showProgress('正在语音转文字 ' + tasks.length + ' 段，请稍候...', 'indeterminate');
 var results = await Promise.all(tasks.map(function(t) {
   return accurateTranscribe(t.blob, 3).then(function(text) {
     return {key: t.key, text: text};
@@ -978,9 +1011,11 @@ results.forEach(function(r) { submission[r.key] = r.text; });
 });
 
 setStatus('提交到云端...', '');
+showProgress('提交中 30%', 30);
 await submitToCloud(submission, 0, btn);
 
 } catch (err) {
+showProgress('hide');
 console.error(err);
 setStatus('提交失败，请重试', 'error');
 btn.textContent = '重新提交';
@@ -1005,6 +1040,8 @@ if (!r.ok) throw new Error('HTTP ' + r.status);
 return r.json();
 }).then(function(result) {
 if (result.success) {
+showProgress('提交成功！', 100);
+setTimeout(function() { showProgress('hide'); }, 600);
 document.getElementById('surveyForm').style.display = 'none';
 document.getElementById('thanksBox').classList.add('show');
 document.getElementById('submitStatus').textContent = '';
@@ -1012,6 +1049,7 @@ isSubmitting = false;
 resolve();
 } else if (result.error && result.error.indexOf('sha') >= 0 && retryCount < 3) {
 setStatus('云端冲突自动重试... (' + (retryCount+1) + '/3)', '');
+showProgress('云端同步冲突，自动重试中 (' + (retryCount+1) + '/3)...', 30 + retryCount * 15);
 setTimeout(function() { submitToCloud(payload, retryCount+1, btn).then(resolve).catch(reject); }, 800);
 } else {
 throw new Error(result.error || 'Unknown');
@@ -1021,11 +1059,14 @@ clearTimeout(fetchTimeout);
 console.error('Submit error:', err);
 if (err.name === 'AbortError' && retryCount < 3) {
 setStatus('云端超时，第' + (retryCount+1) + '次重试...', 'error');
+showProgress('网络超时，正在重试 (' + (retryCount+1) + '/3)...', 15 + retryCount * 10);
 setTimeout(function() { submitToCloud(payload, retryCount+1, btn).then(resolve).catch(reject); }, 2000);
 } else if (retryCount < 3) {
 setStatus('网络重试... (' + (retryCount+1) + '/3)', 'error');
+showProgress('网络异常，正在重试 (' + (retryCount+1) + '/3)...', 15 + retryCount * 10);
 setTimeout(function() { submitToCloud(payload, retryCount+1, btn).then(resolve).catch(reject); }, 1500);
 } else {
+showProgress('hide');
 btn.textContent = '重新提交';
 btn.disabled = false;
 isSubmitting = false;
